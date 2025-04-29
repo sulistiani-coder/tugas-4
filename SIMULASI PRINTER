@@ -1,0 +1,83 @@
+from collections import deque
+from datetime import datetime
+import time
+
+class Dokumen:
+    counter = 1 
+
+    def __init__(self, nama):
+        self.nama = f"[{Dokumen.counter}] -> {nama} <-"
+        self.waktu_masuk = datetime.now()
+        Dokumen.counter += 1
+
+    def __str__(self):
+        return f"{self.nama} (masuk pada jam {self.waktu_masuk.strftime('%H:%M:%S')})"
+
+class Printer:
+    def __init__(self):
+        self.antrian = deque()
+        self.riwayat = []
+
+    def tambah_dokumen(self, nama):
+        dok = Dokumen(nama)
+        self.antrian.append(dok)
+        posisi = len(self.antrian)
+        print(f"\n[+] Dokumen {dok.nama} berhasil ditambahkan ke antrian.")
+        print(f"    Dokumen ini berada di posisi ke-{posisi} dalam antrian.")
+        self.lihat_antrian()
+
+    def cetak(self):
+        if not self.antrian:
+            print("\n[!] Antrian kosong. Tidak ada dokumen yang bisa dicetak.")
+            return
+        dok = self.antrian.popleft()
+        print(f"\n[~] Mencetak dokumen paling depan: '{dok.nama}'...")
+        time.sleep(1.5)
+        waktu_cetak = datetime.now().strftime('%H:%M:%S')
+        print(f"[✓] Dokumen '{dok.nama}' selesai dicetak pada jam {waktu_cetak}.")
+        self.riwayat.append((dok, waktu_cetak))
+        self.lihat_antrian()
+
+    def lihat_antrian(self):
+        if not self.antrian:
+            print("\n[=] Antrian cetak kosong.")
+        else:
+            print("\n[=] Antrian cetak saat ini:")
+            for idx, dok in enumerate(self.antrian, 1):
+                print(f"  {idx}. {dok}")
+
+    def lihat_riwayat(self):
+        if not self.riwayat:
+            print("\n[-] Belum ada dokumen yang dicetak.")
+        else:
+            print("\n[≡] Riwayat cetak dokumen:")
+            for idx, (dok, waktu) in enumerate(reversed(self.riwayat), 1):
+                print(f"  {idx}. {dok.nama} dicetak pada jam {waktu}")
+
+def menu():
+    printer = Printer()
+    while True:
+        print("\n======= SIMULASI PRINTER CERDAS gue =======")
+        print("1. Rombok Dokumen")
+        print("2. Nyetak Dokumen")
+        print("3. Telikat Antrian")
+        print("4. Telikat Bekast Nyetak")
+        print("5. Sugun")
+        pilihan = input("Silakde pilek menu lek (1-5): ")
+
+        if pilihan == "1":
+            nama = input("\nSilakde ketik aran dokumen sak munde mele: ")
+            printer.tambah_dokumen(nama)
+        elif pilihan == "2":
+            printer.cetak()
+        elif pilihan == "3":
+            printer.lihat_antrian()
+        elif pilihan == "4":
+            printer.lihat_riwayat()
+        elif pilihan == "5":
+            print("\nTerima kasii yaa, sudah menggunakan printer cerdas gue inii!")
+            break
+        else:
+            print("\n[!] Pilihan ndak valid ka tuan. Silakde coba lagi nggihh.")
+
+menu()
